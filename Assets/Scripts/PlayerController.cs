@@ -17,6 +17,11 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        var moveHorizontal = Input.GetAxis("Horizontal");
+        var moveVertical = Input.GetAxis("Vertical");
+
+        var movement = new Vector3(moveHorizontal, 0, moveVertical);
+
+        rb.AddForce(speed * movement);
     }
 }
