@@ -4,24 +4,37 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 20;
+    private Rigidbody playerRb;
+    [SerializeField] float jumpForce; // ジャンプ力
+    [SerializeField] float gravityModifier; // 重力値調整用
 
-    private Rigidbody rb;
+    [SerializeField] bool isOnGround; // 地面についているか
 
     // Start is called before the first frame update
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        playerRb = GetComponent<Rigidbody>();
+        Physics.gravity *= gravityModifier;
     }
 
     // Update is called once per frame
     void Update()
     {
-        var moveHorizontal = Input.GetAxis("Horizontal");
-        var moveVertical = Input.GetAxis("Vertical");
+        // スペースキーが押され、かつ地面にいたら
+        if (Input.GetKeyDown(KeyCode.Space) && isOnGround)
+        {
+            playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse); // 上へ飛ばす
+            isOnGround = false; // ジャンプした＝地面にいない
+        }
+    }
 
-        var movement = new Vector3(moveHorizontal, 0, moveVertical);
-
-        rb.AddForce(speed * movement);
+    // 衝突が起きたら実行
+    private void OnCollisionEnter(Collision collision)
+    {
+        // ぶつかった相手（collision）のタグがGroundなら
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isOnGround = true; // 地面についている状態に変更
+        }
     }
 }
